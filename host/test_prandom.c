@@ -1,9 +1,9 @@
 /** \file
-  *
-  * \brief TO DO YET!!!!
-  *
-  * This file is licensed as described by the file LICENCE.
-  */
+ *
+ * \brief TO DO YET!!!!
+ *
+ * This file is licensed as described by the file LICENCE.
+ */
 
 #include "bignum256.h"
 #include "common.h"
@@ -19,14 +19,6 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-
-int tests_passed;
-int tests_failed;
-int tests_total;
-clock_t start_time;
-clock_t finish_time;
-double time_spent;
 
 void reportFailurePrandom(void)
 {
@@ -43,11 +35,11 @@ void reportSuccessPrandom(void)
 }
 
 /** Test whether deterministic key generator is a type-2 generator. This means
-  * that CKD(x, n) * G = CKD'(x * G, n) i.e. public keys can be derived
-  * without knowing the parent private key.
-  * \param seed generateDeterministic256().
-  * \param num See generateDeterministic256().
-  */
+ * that CKD(x, n) * G = CKD'(x * G, n) i.e. public keys can be derived
+ * without knowing the parent private key.
+ * \param seed generateDeterministic256().
+ * \param num See generateDeterministic256().
+ */
 static void type2DeterministicTest(uint8_t *seed, uint32_t num)
 {
 	uint8_t private_key[32];
@@ -56,7 +48,7 @@ static void type2DeterministicTest(uint8_t *seed, uint32_t num)
 	PointAffine public_key;
 
 	/* Calculate CKD(x, n) * G. */
-	clearParentPublicKeyCache();	/* ensure public key cache has been cleared */
+	clearParentPublicKeyCache(); /* ensure public key cache has been cleared */
 
 	assert(!generateDeterministic256(private_key, seed, num));
 
@@ -102,7 +94,7 @@ void initialiseTestsPrandom(void)
 	tests_failed = 0;
 	tests_passed = 0;
 
-	srand(42);	/* Make sure tests which rely on rand() are deterministic */
+	srand(42); /* Make sure tests which rely on rand() are deterministic */
 
 	printf("\n\n=====================================================================================================================================================\n");
 
@@ -129,12 +121,12 @@ void finaliseTestsPrandom(void)
 
 	broken_hwrng = false;
 
-	time_spent = ((double) (finish_time - start_time)) / CLOCKS_PER_SEC;
+	time_spent = ((double)(finish_time - start_time)) / CLOCKS_PER_SEC;
 
 	closeWalletStorage();
 	deleteWalletStorage();
 
-	srand((unsigned) time(&t));
+	srand((unsigned)time(&t));
 
 	printf("\n=====================================================================================================================================================\n");
 
@@ -145,7 +137,7 @@ void finaliseTestsPrandom(void)
 	printf("=====================================================================================================================================================\n\n");
 }
 
-void TestPrandom(statistics * stats)
+void TestPrandom(statistics *stats)
 {
 	bool abort;
 	uint8_t seed[SEED_LENGTH];
@@ -179,11 +171,11 @@ void TestPrandom(statistics * stats)
 
 	for (i = 0; i < SEED_LENGTH; i++)
 	{
-		memset(seed, 42, SEED_LENGTH);	/* Seed cannot be all 0 */
+		memset(seed, 42, SEED_LENGTH); /* Seed cannot be all 0 */
 
 		seed[i] = 1;
 
-		clearParentPublicKeyCache(); 	/* Ensure public key cache has been cleared */
+		clearParentPublicKeyCache(); /* Ensure public key cache has been cleared */
 
 		assert(!generateDeterministic256(keys[i], seed, 0));
 
@@ -209,11 +201,11 @@ void TestPrandom(statistics * stats)
 	/* Check that generateDeterministic256() isn't ignoring num. */
 	printf("Check that generateDeterministic256() isn't ignoring num\n");
 
-	memset(seed, 42, SEED_LENGTH);	/* Seed cannot be all 0 */
+	memset(seed, 42, SEED_LENGTH); /* Seed cannot be all 0 */
 
 	seed[0] = 1;
 
-	clearParentPublicKeyCache();	/* Ensure public key cache has been cleared */
+	clearParentPublicKeyCache(); /* Ensure public key cache has been cleared */
 
 	assert(!generateDeterministic256(key2, seed, 1));
 
@@ -237,7 +229,7 @@ void TestPrandom(statistics * stats)
 	/* Check that generateDeterministic256() is actually deterministic. */
 	printf("Check that generateDeterministic256() is actually deterministic\n");
 
-	clearParentPublicKeyCache();	/* Ensure public key cache has been cleared */
+	clearParentPublicKeyCache(); /* Ensure public key cache has been cleared */
 
 	assert(!generateDeterministic256(key2, seed, 0));
 
@@ -249,14 +241,14 @@ void TestPrandom(statistics * stats)
 	else
 		reportSuccessPrandom(),
 
-	/* Check that generateDeterministic256() generates BIP 0032 private keys correctly. */
-	printf("Check that generateDeterministic256() generates BIP 0032 private keys correctly\n");
+			/* Check that generateDeterministic256() generates BIP 0032 private keys correctly. */
+			printf("Check that generateDeterministic256() generates BIP 0032 private keys correctly\n");
 
 	memcpy(seed, sipa_test_master_seed, SEED_LENGTH);
 
 	for (i = 1; i < SIPA_TEST_ADDRESSES; i++)
 	{
-		clearParentPublicKeyCache();	/* Ensure public key cache has been cleared */
+		clearParentPublicKeyCache(); /* Ensure public key cache has been cleared */
 
 		assert(!generateDeterministic256TestTZ(key2, seed, (uint32_t)0x12345678));
 
@@ -353,7 +345,7 @@ void TestPrandom(statistics * stats)
 
 	for (i = 0; i < ENTROPY_POOL_LENGTH; i++)
 	{
-		nonVolatileRead(&one_byte, PARTITION_GLOBAL, (uint32_t)(ADDRESS_ENTROPY_POOL + i), 1);	/* Save */
+		nonVolatileRead(&one_byte, PARTITION_GLOBAL, (uint32_t)(ADDRESS_ENTROPY_POOL + i), 1); /* Save */
 
 		one_byte_corrupted = (uint8_t)(one_byte ^ 0xde);
 
@@ -373,7 +365,6 @@ void TestPrandom(statistics * stats)
 	if (!abort)
 		reportSuccessPrandom();
 
-
 	/* Check that the checksum actually detects modification of the checksum itself. */
 	printf("Check that the checksum actually detects modification of the checksum itself\n");
 
@@ -381,7 +372,7 @@ void TestPrandom(statistics * stats)
 
 	for (i = 0; i < POOL_CHECKSUM_LENGTH; i++)
 	{
-		nonVolatileRead(&one_byte,PARTITION_GLOBAL,  (uint32_t)(ADDRESS_POOL_CHECKSUM + i), 1);	/* Save */
+		nonVolatileRead(&one_byte, PARTITION_GLOBAL, (uint32_t)(ADDRESS_POOL_CHECKSUM + i), 1); /* Save */
 
 		one_byte_corrupted = (uint8_t)(one_byte ^ 0xde);
 
@@ -447,7 +438,7 @@ void TestPrandom(statistics * stats)
 
 	memset(pool_state, 0, ENTROPY_POOL_LENGTH);
 
-	setEntropyPool(pool_state);	/* Make sure entropy pool state is valid before corrupting it */
+	setEntropyPool(pool_state); /* Make sure entropy pool state is valid before corrupting it */
 
 	nonVolatileRead(&one_byte, PARTITION_GLOBAL, ADDRESS_POOL_CHECKSUM, 1);
 
@@ -480,7 +471,7 @@ void TestPrandom(statistics * stats)
 
 	memset(pool_state, 42, ENTROPY_POOL_LENGTH);
 
-	setEntropyPool(pool_state);	/* Make sure entropy pool state is valid */
+	setEntropyPool(pool_state); /* Make sure entropy pool state is valid */
 
 	memset(pool_state, 43, ENTROPY_POOL_LENGTH);
 

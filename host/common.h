@@ -1,13 +1,13 @@
 /** \file common.h
-  *
-  * \brief Defines things which are common to most of the source distribution.
-  *
-  * If porting to another platform, please check for the presence of stdint.h
-  * and if it isn't available, define NO_STDINT_H and check that the typedefs
-  * below refer to appropriate types.
-  *
-  * This file is licensed as described by the file LICENCE.
-  */
+ *
+ * \brief Defines things which are common to most of the source distribution.
+ *
+ * If porting to another platform, please check for the presence of stdint.h
+ * and if it isn't available, define NO_STDINT_H and check that the typedefs
+ * below refer to appropriate types.
+ *
+ * This file is licensed as described by the file LICENCE.
+ */
 
 #ifndef COMMON_H_INCLUDED
 #define COMMON_H_INCLUDED
@@ -15,19 +15,20 @@
 #include <stddef.h>
 
 /** This variable it is used to change some values that are used only during
-  * testing
-  */
+ * testing
+ */
 #define TESTING
+#include <time.h>
 
 /** This variable allows to print some of the returns on CA functions, this way
-  * it is possible to known the results from the TA
-  */
+ * it is possible to known the results from the TA
+ */
 /* #define DEBUG */
 
 /** This define is used to indicate that the TEE used is OP-TEE this way it is
-  * possible to use code specifically for OP-TEE
-  * \warning When changing this variable the #OP_TEE_TA should be changed to.
-  */
+ * possible to use code specifically for OP-TEE
+ * \warning When changing this variable the #OP_TEE_TA should be changed to.
+ */
 #define OP_TEE_CA
 
 /*
@@ -72,8 +73,8 @@ typedef signed __int64 int64_t;
 /** Boolean data type definition for platforms which lack stdbool.h. */
 typedef enum BoolEnum
 {
-	false = 0,
-	true = 1
+  false = 0,
+  true = 1
 } bool;
 
 #else
@@ -91,24 +92,24 @@ typedef enum BoolEnum
 #include <string.h>
 
 /** Get maximum of a and b.
-  * \warning Do not use this if the evaluation of a and b has side effects.
-  */
-#define MAX(a, b)			(((a) > (b))? (a) : (b))
+ * \warning Do not use this if the evaluation of a and b has side effects.
+ */
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
 /** Get minimum of a and b.
-  * \warning Do not use this if the evaluation of a and b has side effects.
-  */
-#define MIN(a, b)			(((a) < (b))? (a) : (b))
+ * \warning Do not use this if the evaluation of a and b has side effects.
+ */
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 /** In certain situations, inlining can cause an overall increase in stack
-  * space. For example, let foo() use 100 bytes of stack space, bar() 104 bytes
-  * and sno() 50 bytes. If sno() calls foo() and then (after foo() returns)
-  * calls bar(), the maximum stack space used is 154 bytes. But if an
-  * enthusiastic compiler decides to inline foo() and bar() into sno(), the
-  * maximum stack space used is now 254 bytes, because all the functions'
-  * frames are combined.
-  * NOINLINE is supposed to tell compilers to not inline the associated
-  * function. Careful use of NOINLINE can decrease the amount of maximum stack
-  * space used. */
+ * space. For example, let foo() use 100 bytes of stack space, bar() 104 bytes
+ * and sno() 50 bytes. If sno() calls foo() and then (after foo() returns)
+ * calls bar(), the maximum stack space used is 154 bytes. But if an
+ * enthusiastic compiler decides to inline foo() and bar() into sno(), the
+ * maximum stack space used is now 254 bytes, because all the functions'
+ * frames are combined.
+ * NOINLINE is supposed to tell compilers to not inline the associated
+ * function. Careful use of NOINLINE can decrease the amount of maximum stack
+ * space used. */
 #if defined(__GNUC__)
 #define NOINLINE __attribute__((noinline))
 #else
@@ -116,25 +117,25 @@ typedef enum BoolEnum
 #endif /* #if defined(__GNUC__) */
 
 /** On certain platforms, unchanging, read-only data (eg. lookup tables) needs
-  * to be marked and accessed in a way that is different to read/write data.
-  * Marking this data with PROGMEM saves valuable RAM space. However, any data
-  * marked with PROGMEM needs to be accessed using
-  * the #LOOKUP_BYTE and #LOOKUP_DWORD macros. */
+ * to be marked and accessed in a way that is different to read/write data.
+ * Marking this data with PROGMEM saves valuable RAM space. However, any data
+ * marked with PROGMEM needs to be accessed using
+ * the #LOOKUP_BYTE and #LOOKUP_DWORD macros. */
 #if defined(AVR) && defined(__GNUC__)
 #include <avr/io.h>
 #include <avr/pgmspace.h>
-#define LOOKUP_DWORD(x)		(pgm_read_dword_near(&(x)))
-#define LOOKUP_BYTE(x)		(pgm_read_byte_near(&(x)))
+#define LOOKUP_DWORD(x) (pgm_read_dword_near(&(x)))
+#define LOOKUP_BYTE(x) (pgm_read_byte_near(&(x)))
 #else
 #define PROGMEM
 /** Use this to access #PROGMEM lookup tables which have dword (32 bit)
-  * entries. For example, normally you would use `r = dword_table[i];` but
-  * for a #PROGMEM table, use `r = LOOKUP_DWORD(dword_table[i]);`. */
-#define LOOKUP_DWORD(x)		(x)
+ * entries. For example, normally you would use `r = dword_table[i];` but
+ * for a #PROGMEM table, use `r = LOOKUP_DWORD(dword_table[i]);`. */
+#define LOOKUP_DWORD(x) (x)
 /** Use this to access #PROGMEM lookup tables which have byte (8 bit)
-  * entries. For example, normally you would use `r = byte_table[i];` but
-  * for a #PROGMEM table, use `r = LOOKUP_BYTE(byte_table[i]);`. */
-#define LOOKUP_BYTE(x)		(x)
+ * entries. For example, normally you would use `r = byte_table[i];` but
+ * for a #PROGMEM table, use `r = LOOKUP_BYTE(byte_table[i]);`. */
+#define LOOKUP_BYTE(x) (x)
 #endif /* #if defined(AVR) && defined(__GNUC__) */
 
 #endif /* #ifndef COMMON_H_INCLUDED */

@@ -1,9 +1,9 @@
 /** \file
-  *
-  * \brief TO DO YET!!!!
-  *
-  * This file is licensed as described by the file LICENCE.
-  */
+ *
+ * \brief TO DO YET!!!!
+ *
+ * This file is licensed as described by the file LICENCE.
+ */
 
 #include "common.h"
 #include "endian.h"
@@ -19,17 +19,9 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-
-int tests_passed;
-int tests_failed;
-int tests_total;
-clock_t start_time;
-clock_t finish_time;
-double time_spent;
 
 /** After each call to generateTestTransaction(), this will contain the offset
-  * within the "full" transaction where the main transaction begins. */
+ * within the "full" transaction where the main transaction begins. */
 static uint32_t main_offset;
 
 void reportFailureTransaction(void)
@@ -47,8 +39,8 @@ void reportSuccessTransaction(void)
 }
 
 /** Check that the number of outputs seen is as expected.
-  * \param target The expected number of outputs.
-  */
+ * \param target The expected number of outputs.
+ */
 static void checkOutputsSeen(int target)
 {
 	if (num_outputs_seen != target)
@@ -61,14 +53,14 @@ static void checkOutputsSeen(int target)
 }
 
 /** Set the input stream to some transaction data and attempt to parse that
-  * transaction.
-  * \param buffer The test transaction data. If this is NULL, the input stream
-  *               will be set to an infinite stream of zeroes.
-  * \param length The length of the transaction, in number of bytes.
-  * \param name The test name of the transaction. This is displayed on stdout
-  *             if a test fails.
-  * \param expected_return The expected return value of parseTransaction().
-  */
+ * transaction.
+ * \param buffer The test transaction data. If this is NULL, the input stream
+ *               will be set to an infinite stream of zeroes.
+ * \param length The length of the transaction, in number of bytes.
+ * \param name The test name of the transaction. This is displayed on stdout
+ *             if a test fails.
+ * \param expected_return The expected return value of parseTransaction().
+ */
 static void testTransaction(const uint8_t *buffer, uint32_t length, const char *name, TransactionErrors expected_return)
 {
 	uint8_t sig_hash[32];
@@ -114,12 +106,12 @@ static void testTransaction(const uint8_t *buffer, uint32_t length, const char *
 }
 
 /** This is just like testTransaction(), except this prepends
-  * #good_input_transaction (and the is_ref bytes) to the test transaction data.
-  * \param buffer See testTransaction().
-  * \param length See testTransaction().
-  * \param name See testTransaction().
-  * \param expected_return See testTransaction().
-  */
+ * #good_input_transaction (and the is_ref bytes) to the test transaction data.
+ * \param buffer See testTransaction().
+ * \param length See testTransaction().
+ * \param name See testTransaction().
+ * \param expected_return See testTransaction().
+ */
 static void prependGoodInputTestTransaction(const uint8_t *buffer, uint32_t length, const char *name, TransactionErrors expected_return)
 {
 	uint8_t *new_buffer;
@@ -140,7 +132,7 @@ static void prependGoodInputTestTransaction(const uint8_t *buffer, uint32_t leng
 
 	memcpy(&(new_buffer[1]), good_input_transaction, sizeof(good_input_transaction));
 
-	new_buffer[sizeof(good_input_transaction) + 1] = 0x00;	/* is_ref = 0 (main) */
+	new_buffer[sizeof(good_input_transaction) + 1] = 0x00; /* is_ref = 0 (main) */
 
 	memcpy(&(new_buffer[sizeof(good_input_transaction) + 2]), buffer, length);
 
@@ -150,12 +142,12 @@ static void prependGoodInputTestTransaction(const uint8_t *buffer, uint32_t leng
 }
 
 /** This is just like testTransaction(), except this prepends
-  * #p2sh_test_prepend to the test transaction data.
-  * \param buffer See testTransaction().
-  * \param length See testTransaction().
-  * \param name See testTransaction().
-  * \param expected_return See testTransaction().
-  */
+ * #p2sh_test_prepend to the test transaction data.
+ * \param buffer See testTransaction().
+ * \param length See testTransaction().
+ * \param name See testTransaction().
+ * \param expected_return See testTransaction().
+ */
 static void prependGoodP2SHInputsTestTransaction(const uint8_t *buffer, uint32_t length, const char *name, TransactionErrors expected_return)
 {
 	uint8_t *new_buffer;
@@ -180,17 +172,17 @@ static void prependGoodP2SHInputsTestTransaction(const uint8_t *buffer, uint32_t
 }
 
 /** Generate a test transaction with the specified number of inputs and
-  * outputs. This generates a "full" transaction, which all (referenced)
-  * input transactions followed by the main (spending) transaction.
-  * The structure of transactions was obtained from
-  * https://en.bitcoin.it/wiki/Protocol_specification on 11-June-2012.
-  * \param out_length The length of the generated transaction will be written
-  *                   here.
-  * \param num_inputs The number of inputs to include in the transaction.
-  * \param num_outputs The number of outputs to include in the transaction.
-  * \return A pointer to a byte array containing the transaction data. This
-  *         array must eventually be freed by the caller.
-  */
+ * outputs. This generates a "full" transaction, which all (referenced)
+ * input transactions followed by the main (spending) transaction.
+ * The structure of transactions was obtained from
+ * https://en.bitcoin.it/wiki/Protocol_specification on 11-June-2012.
+ * \param out_length The length of the generated transaction will be written
+ *                   here.
+ * \param num_inputs The number of inputs to include in the transaction.
+ * \param num_outputs The number of outputs to include in the transaction.
+ * \return A pointer to a byte array containing the transaction data. This
+ *         array must eventually be freed by the caller.
+ */
 static uint8_t *generateTestTransaction(uint32_t *out_length, uint32_t num_inputs, uint32_t num_outputs)
 {
 	uint8_t *buffer;
@@ -204,7 +196,7 @@ static uint8_t *generateTestTransaction(uint32_t *out_length, uint32_t num_input
 	malloc_size += num_inputs * (sizeof(good_input_transaction) + 1);
 	malloc_size += num_outputs * sizeof(one_output);
 	malloc_size += sizeof(good_main_transaction);
-	malloc_size += 100;	/* just to be sure */
+	malloc_size += 100; /* just to be sure */
 	buffer = malloc(malloc_size);
 	ptr = 0;
 
@@ -337,7 +329,7 @@ void initialiseTestsTransaction(void)
 	tests_failed = 0;
 	tests_passed = 0;
 
-	srand(42);	/* Make sure tests which rely on rand() are deterministic */
+	srand(42); /* Make sure tests which rely on rand() are deterministic */
 
 	printf("\n\n=====================================================================================================================================================\n");
 
@@ -368,12 +360,12 @@ void finaliseTestsTransaction(void)
 
 	broken_hwrng = false;
 
-	time_spent = ((double) (finish_time - start_time)) / CLOCKS_PER_SEC;
+	time_spent = ((double)(finish_time - start_time)) / CLOCKS_PER_SEC;
 
 	closeWalletStorage();
 	deleteWalletStorage();
 
-	srand((unsigned) time(&t));
+	srand((unsigned)time(&t));
 
 	printf("\n=====================================================================================================================================================\n");
 
@@ -384,7 +376,7 @@ void finaliseTestsTransaction(void)
 	printf("=====================================================================================================================================================\n\n");
 }
 
-void TestTransaction(statistics * stats)
+void TestTransaction(statistics *stats)
 {
 	int i;
 	char name[1024];
@@ -444,13 +436,13 @@ void TestTransaction(statistics * stats)
 	printf("Corrupt the version field\n");
 
 	memcpy(bad_main_transaction, good_main_transaction, sizeof(good_main_transaction));
-	writeU32LittleEndian(bad_main_transaction, 0x00000000);	/* version */
+	writeU32LittleEndian(bad_main_transaction, 0x00000000); /* version */
 
 	prependGoodInputTestTransaction(bad_main_transaction, sizeof(good_main_transaction), "badversion", TRANSACTION_NON_STANDARD);
-	writeU32LittleEndian(bad_main_transaction, 0xFFFFFFFF);	/* version */
+	writeU32LittleEndian(bad_main_transaction, 0xFFFFFFFF); /* version */
 
 	prependGoodInputTestTransaction(bad_main_transaction, sizeof(good_main_transaction), "badversion2", TRANSACTION_NON_STANDARD);
-	writeU32LittleEndian(bad_main_transaction, 0x00000002);	/* version */
+	writeU32LittleEndian(bad_main_transaction, 0x00000002); /* version */
 
 	prependGoodInputTestTransaction(bad_main_transaction, sizeof(good_main_transaction), "badversion3", TRANSACTION_NON_STANDARD);
 
@@ -461,7 +453,7 @@ void TestTransaction(statistics * stats)
 
 	memcpy(bad_main_transaction, inputs_removed_transaction, sizeof(inputs_removed_transaction));
 
-	bad_main_transaction[4] = 0xfc;	/* Number of inputs */
+	bad_main_transaction[4] = 0xfc; /* Number of inputs */
 
 	prependGoodInputTestTransaction(bad_main_transaction, sizeof(inputs_removed_transaction), "noinputs2", TRANSACTION_INVALID_FORMAT);
 
@@ -607,10 +599,10 @@ void TestTransaction(statistics * stats)
 	printf("Corrupt the sequence field\n");
 
 	memcpy(bad_main_transaction, good_main_transaction, sizeof(good_main_transaction));
-	writeU32LittleEndian(&(bad_main_transaction[67]), 0x00000000);	/* Sequence */
+	writeU32LittleEndian(&(bad_main_transaction[67]), 0x00000000); /* Sequence */
 
 	prependGoodInputTestTransaction(bad_main_transaction, sizeof(good_main_transaction), "badsequence", TRANSACTION_NON_STANDARD);
-	writeU32LittleEndian(&(bad_main_transaction[67]), 0xFFFFFFFE);	/* Sequence */
+	writeU32LittleEndian(&(bad_main_transaction[67]), 0xFFFFFFFE); /* Sequence */
 
 	prependGoodInputTestTransaction(bad_main_transaction, sizeof(good_main_transaction), "badsequence2", TRANSACTION_NON_STANDARD);
 
@@ -623,7 +615,7 @@ void TestTransaction(statistics * stats)
 
 	memcpy(generated_transaction, outputs_removed_transaction, sizeof(outputs_removed_transaction));
 
-	generated_transaction[335] = 0xfc;	/* Number of outputs */
+	generated_transaction[335] = 0xfc; /* Number of outputs */
 
 	testTransaction(generated_transaction, sizeof(outputs_removed_transaction), "nooutputs2", TRANSACTION_INVALID_FORMAT);
 	free(generated_transaction);
@@ -633,7 +625,7 @@ void TestTransaction(statistics * stats)
 
 	testTransaction(too_many_outputs_transaction, sizeof(too_many_outputs_transaction), "wrongoutputs", TRANSACTION_INVALID_FORMAT);
 	generated_transaction = generateTestTransaction(&length, 1, 9);
-	generated_transaction[main_offset + 71] = 0x01;	/* Number of outputs (too few) */
+	generated_transaction[main_offset + 71] = 0x01; /* Number of outputs (too few) */
 
 	/*
 	 * The transaction parser will return TRANSACTION_NON_STANDARD because it
@@ -704,7 +696,7 @@ void TestTransaction(statistics * stats)
 	generated_transaction = generateTestTransaction(&length, 1, 20);
 	generated_transaction[main_offset + 71] = 0xfe;
 
-	writeU32LittleEndian(&(generated_transaction[main_offset + 72]), 0xffffffff);	/* Number of outputs */
+	writeU32LittleEndian(&(generated_transaction[main_offset + 72]), 0xffffffff); /* Number of outputs */
 	testTransaction(generated_transaction, length, "stupidoutputs", TRANSACTION_TOO_MANY_OUTPUTS);
 	free(generated_transaction);
 
@@ -714,8 +706,8 @@ void TestTransaction(statistics * stats)
 	generated_transaction = generateTestTransaction(&length, 1, 20);
 	generated_transaction[main_offset + 71] = 0xff;
 
-	writeU32LittleEndian(&(generated_transaction[main_offset + 72]), 0xffffffff);	/* Number of outputs */
-	writeU32LittleEndian(&(generated_transaction[main_offset + 76]), 0xffffffff);	/* Number of outputs */
+	writeU32LittleEndian(&(generated_transaction[main_offset + 72]), 0xffffffff); /* Number of outputs */
+	writeU32LittleEndian(&(generated_transaction[main_offset + 76]), 0xffffffff); /* Number of outputs */
 
 	/* The transaction parser returns TRANSACTION_INVALID_FORMAT because the varint reader can't read uint64_t. */
 	printf("The transaction parser returns TRANSACTION_INVALID_FORMAT because the varint reader can't read uint64_t\n");
@@ -807,18 +799,18 @@ void TestTransaction(statistics * stats)
 	printf("Corrupt the locktime field\n");
 
 	memcpy(bad_main_transaction, good_main_transaction, sizeof(good_main_transaction));
-	writeU32LittleEndian(&(bad_main_transaction[140]), 0x00000001);	/* Locktime */
+	writeU32LittleEndian(&(bad_main_transaction[140]), 0x00000001); /* Locktime */
 	prependGoodInputTestTransaction(bad_main_transaction, sizeof(good_main_transaction), "badlocktime", TRANSACTION_NON_STANDARD);
-	writeU32LittleEndian(&(bad_main_transaction[140]), 0xFFFFFFFF);	/* Locktime */
+	writeU32LittleEndian(&(bad_main_transaction[140]), 0xFFFFFFFF); /* Locktime */
 	prependGoodInputTestTransaction(bad_main_transaction, sizeof(good_main_transaction), "badlocktime2", TRANSACTION_NON_STANDARD);
 
 	/* Corrupt the hashtype field. */
 	printf("Corrupt the hashtype field\n");
 
 	memcpy(bad_main_transaction, good_main_transaction, sizeof(good_main_transaction));
-	writeU32LittleEndian(&(bad_main_transaction[144]), 0x00000000);	/* Hashtype */
+	writeU32LittleEndian(&(bad_main_transaction[144]), 0x00000000); /* Hashtype */
 	prependGoodInputTestTransaction(bad_main_transaction, sizeof(good_main_transaction), "badhashtype", TRANSACTION_NON_STANDARD);
-	writeU32LittleEndian(&(bad_main_transaction[144]), 0xFFFFFFFF);	/* Hashtype */
+	writeU32LittleEndian(&(bad_main_transaction[144]), 0xFFFFFFFF); /* Hashtype */
 	prependGoodInputTestTransaction(bad_main_transaction, sizeof(good_main_transaction), "badhashtype2", TRANSACTION_NON_STANDARD);
 
 	/* Add junk data to the end of a good transaction. */
@@ -846,14 +838,14 @@ void TestTransaction(statistics * stats)
 	 * compatible. The easiest way to check if the signature hash is Bitcoin
 	 * compatible is to sign a transaction and see if other nodes relay it.
 	 */
-	 printf("Check that the signature hash is a double SHA-256 hash of the (main) transaction\n");
+	printf("Check that the signature hash is a double SHA-256 hash of the (main) transaction\n");
 
 	setTestInputStream(good_full_transaction, sizeof(good_full_transaction));
 	parseTransaction(sig_hash, transaction_hash, sizeof(good_full_transaction));
 
 	sha256BeginTZ(1);
 
-	sha256WriteTZ((uint8_t*)good_main_transaction, (uint32_t)sizeof(good_main_transaction), 1);
+	sha256WriteTZ((uint8_t *)good_main_transaction, (uint32_t)sizeof(good_main_transaction), 1);
 
 	sha256FinishDoubleTZ(test_hs, (uint32_t)32, 1);
 
@@ -873,7 +865,7 @@ void TestTransaction(statistics * stats)
 	 */
 	printf("Check that the transaction hash is a double SHA-256 of the (main) transaction, ignoring input scripts\n");
 
-	//sha256Begin(&test_hs);
+	// sha256Begin(&test_hs);
 
 	sha256BeginTZ(1);
 
@@ -886,14 +878,13 @@ void TestTransaction(statistics * stats)
 	// 	sha256WriteTZ((uint8_t*)&(good_main_transaction[i]), (uint32_t)1);
 	// }
 
-	sha256WriteTZ((uint8_t*)good_main_transaction, (uint32_t)41, 1);
-	sha256WriteTZ((uint8_t*)&(good_main_transaction[67]), 81, 1);
+	sha256WriteTZ((uint8_t *)good_main_transaction, (uint32_t)41, 1);
+	sha256WriteTZ((uint8_t *)&(good_main_transaction[67]), 81, 1);
 
-
-	//sha256FinishDouble(&test_hs);
+	// sha256FinishDouble(&test_hs);
 	sha256FinishDoubleTZ(test_hs, (uint32_t)32, 1);
 
-	//writeHashToByteArray(calculated_transaction_hash, &test_hs, false);
+	// writeHashToByteArray(calculated_transaction_hash, &test_hs, false);
 
 	writeHashToByteArrayTZ(calculated_transaction_hash, test_hs, false);
 
@@ -913,7 +904,7 @@ void TestTransaction(statistics * stats)
 
 	memcpy(bad_full_transaction, good_full_transaction, sizeof(good_full_transaction));
 
-	bad_full_transaction[305] = 0x04;	/* First byte of input script */
+	bad_full_transaction[305] = 0x04; /* First byte of input script */
 
 	setTestInputStream(bad_full_transaction, sizeof(good_full_transaction));
 
@@ -943,7 +934,7 @@ void TestTransaction(statistics * stats)
 
 	memcpy(bad_full_transaction, good_full_transaction, sizeof(good_full_transaction));
 
-	bad_full_transaction[366] = 0x00;	/* Last byte of output address */
+	bad_full_transaction[366] = 0x00; /* Last byte of output address */
 
 	setTestInputStream(bad_full_transaction, sizeof(good_full_transaction));
 
@@ -1008,7 +999,7 @@ void TestTransaction(statistics * stats)
 
 	signTransaction(signature, &signature_length, sig_hash, (BigNum256)private_key);
 
-	if ((signature[0] != 0x30)|| (signature_length == 0))
+	if ((signature[0] != 0x30) || (signature_length == 0))
 	{
 		printf("signTransaction() isn't writing to its outputs\n");
 		reportFailureTransaction();

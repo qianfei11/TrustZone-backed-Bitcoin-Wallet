@@ -1,9 +1,9 @@
 /** \file
-  *
-  * \brief Describes functions and structures exported by test_helpers.c.
-  *
-  * This file is licensed as described by the file LICENCE.
-  */
+ *
+ * \brief Describes functions and structures exported by test_helpers.c.
+ *
+ * This file is licensed as described by the file LICENCE.
+ */
 
 #ifndef TEST_HELPERS_H_INCLUDED
 #define TEST_HELPERS_H_INCLUDED
@@ -26,7 +26,7 @@ typedef struct statisticsStruct
 	double time;
 } statistics;
 
-void initialiseStats(statistics * stats);
+void initialiseStats(statistics *stats);
 void bigPrintVariableSize(const uint8_t *number, const unsigned int size, const bool is_big_endian);
 void printBigEndian16(const uint8_t *buffer);
 void printLittleEndian32(const BigNum256 buffer);

@@ -1,9 +1,9 @@
 /** \file
-  *
-  * \brief TO DO YET!!!!
-  *
-  * This file is licensed as described by the file LICENCE.
-  */
+ *
+ * \brief TO DO YET!!!!
+ *
+ * This file is licensed as described by the file LICENCE.
+ */
 
 #include "common.h"
 #include "extern.h"
@@ -17,20 +17,14 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define TOTAL_NUMBER_OF_TESTS	31
-#define ARRAY_SIZE(x) 			(sizeof((x)) / sizeof((x)[0]))
+#define TOTAL_NUMBER_OF_TESTS 31
+#define ARRAY_SIZE(x) (sizeof((x)) / sizeof((x)[0]))
 
-int tests_passed;
-int tests_failed;
-int tests_total;
-char * pos;
+char *pos;
 int writen_size;
 int size;
 int response_size;
-clock_t start_time;
-clock_t finish_time;
-double time_spent;
-char * test_responses[TOTAL_NUMBER_OF_TESTS];
+char *test_responses[TOTAL_NUMBER_OF_TESTS];
 
 const uint8_t *test_streams[] = {
 	test_stream_init,
@@ -63,8 +57,7 @@ const uint8_t *test_streams[] = {
 	test_stream_ping,
 	test_get_master_public_key,
 	test_get_master_public_key_no_press,
-	test_stream_load_no_key
-};
+	test_stream_load_no_key};
 
 const int test_streams_size[] = {
 	ARRAY_SIZE(test_stream_init),
@@ -97,10 +90,9 @@ const int test_streams_size[] = {
 	ARRAY_SIZE(test_stream_ping),
 	ARRAY_SIZE(test_get_master_public_key),
 	ARRAY_SIZE(test_get_master_public_key_no_press),
-	ARRAY_SIZE(test_stream_load_no_key)
-};
+	ARRAY_SIZE(test_stream_load_no_key)};
 
-const char * test_streams_description[] = {
+const char *test_streams_description[] = {
 	test_stream_init_description,
 	test_stream_ping_description,
 	test_stream_format_description,
@@ -131,10 +123,9 @@ const char * test_streams_description[] = {
 	test_stream_ping_description,
 	test_get_master_public_key_description,
 	test_get_master_public_key_no_press_description,
-	test_stream_load_no_key_description
-};
+	test_stream_load_no_key_description};
 
-const char * expected_responses[] = {
+const char *expected_responses[] = {
 	response_stream_init,
 	response_stream_ping,
 	response_stream_format,
@@ -165,8 +156,7 @@ const char * expected_responses[] = {
 	response_stream_ping,
 	response_get_master_public_key,
 	response_get_master_public_key_no_press,
-	response_stream_load_no_key
-};
+	response_stream_load_no_key};
 
 void writeResponseByte(uint8_t byte)
 {
@@ -203,10 +193,10 @@ void initialiseTestsStreams(void)
 	tests_failed = 0;
 	tests_passed = 0;
 
-	srand(42);	/* Make sure tests which rely on rand() are deterministic */
+	srand(42); /* Make sure tests which rely on rand() are deterministic */
 
 	for (i = 0; i < TOTAL_NUMBER_OF_TESTS; i++)
-		test_responses[i] = (char*)malloc(strlen(expected_responses[i])*sizeof(char) + 1);
+		test_responses[i] = (char *)malloc(strlen(expected_responses[i]) * sizeof(char) + 1);
 
 	printf("\n\n=====================================================================================================================================================\n");
 
@@ -233,7 +223,7 @@ void finaliseTestsStreams(void)
 
 	finish_time = clock();
 
-	time_spent = ((double) (finish_time - start_time)) / CLOCKS_PER_SEC;
+	time_spent = ((double)(finish_time - start_time)) / CLOCKS_PER_SEC;
 
 	is_test = false;
 	is_test_stream = false;
@@ -241,14 +231,14 @@ void finaliseTestsStreams(void)
 	closeWalletStorage();
 	deleteWalletStorage();
 
-	srand((unsigned) time(&t));
+	srand((unsigned)time(&t));
 
 	printf("Finished executing the test streams.\n\n");
 
 	for (i = 0; i < TOTAL_NUMBER_OF_TESTS; i++)
 		free(test_responses[i]);
 
-	//printf("IT took %f seconds to execute. \n", time_spent);
+	// printf("IT took %f seconds to execute. \n", time_spent);
 
 	printStatistics(tests_passed, tests_failed, tests_total, time_spent);
 
@@ -256,9 +246,9 @@ void finaliseTestsStreams(void)
 }
 
 /** Test response of processPacket() for a given test stream.
-  * \param test_stream The test stream data to use.
-  * \param size The length of the test stream, in bytes.
-  */
+ * \param test_stream The test stream data to use.
+ * \param size The length of the test stream, in bytes.
+ */
 static void sendOneTestStream(const uint8_t *test_stream, uint32_t size)
 {
 	setTestInputStream(test_stream, size);
@@ -269,12 +259,12 @@ static void sendOneTestStream(const uint8_t *test_stream, uint32_t size)
 }
 
 /** Wrapper around sendOneTestStream() that covers its most common use
-  * case (use of a constant byte array). */
-#define SEND_ONE_TEST_STREAM(x, y)	sendOneTestStream(x, (uint32_t)y);
+ * case (use of a constant byte array). */
+#define SEND_ONE_TEST_STREAM(x, y) sendOneTestStream(x, (uint32_t)y);
 
 /** Tests the response of processPacket() for a set of test streams
-  */
-void TestStreams(statistics * stats)
+ */
+void TestStreams(statistics *stats)
 {
 	int i;
 	int j;
@@ -294,7 +284,7 @@ void TestStreams(statistics * stats)
 		{
 			for (j = 0; j < 4; j++)
 			{
-				printf("Creating a new address [%d]\n", j+1);
+				printf("Creating a new address [%d]\n", j + 1);
 				SEND_ONE_TEST_STREAM(test_streams[i], test_streams_size[i]);
 			}
 		}
@@ -316,7 +306,7 @@ void TestStreams(statistics * stats)
 	(stats->time) += time_spent;
 }
 
-void TestPerformanceStreams(statistics * stats)
+void TestPerformanceStreams(statistics *stats)
 {
 	int i;
 	int j;
@@ -341,7 +331,7 @@ void TestPerformanceStreams(statistics * stats)
 			start_test_time = clock();
 			for (j = 0; j < 4; j++)
 			{
-				printf("Creating a new address [%d]\n", j+1);
+				printf("Creating a new address [%d]\n", j + 1);
 				SEND_ONE_TEST_STREAM(test_streams[i], test_streams_size[i]);
 			}
 			finish_test_time = clock();
@@ -355,7 +345,7 @@ void TestPerformanceStreams(statistics * stats)
 
 		checkResponseValidity(i);
 
-		test_time = ((double) (finish_test_time - start_test_time)) / CLOCKS_PER_SEC;
+		test_time = ((double)(finish_test_time - start_test_time)) / CLOCKS_PER_SEC;
 		total_test_time += test_time;
 
 		printTime(test_time);

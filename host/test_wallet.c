@@ -1,9 +1,9 @@
 /** \file
-  *
-  * \brief TO DO YET!!!!
-  *
-  * This file is licensed as described by the file LICENCE.
-  */
+ *
+ * \brief TO DO YET!!!!
+ *
+ * This file is licensed as described by the file LICENCE.
+ */
 
 #include "bignum256.h"
 #include "ecdsa.h"
@@ -18,17 +18,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
 /** This is only used as a testing variable  */
 WalletRecord test_wallet;
-
-int tests_passed;
-int tests_failed;
-int tests_total;
-clock_t start_time;
-clock_t finish_time;
-double time_spent;
 
 const uint8_t test_password0[] = "1234";
 const uint8_t test_password1[] = "ABCDEFGHJ!!!!";
@@ -49,31 +41,31 @@ void reportSuccessWallet(void)
 }
 
 /** This will be called by sanitiseNonVolatileStorage() every time it
-  * clears the version field of a wallet. This is used to test whether
-  * sanitiseNonVolatileStorage() is clearing version fields properly.
-  * \param address The address (in non-volatile storage) where the cleared
-  *                version field is.
-  */
+ * clears the version field of a wallet. This is used to test whether
+ * sanitiseNonVolatileStorage() is clearing version fields properly.
+ * \param address The address (in non-volatile storage) where the cleared
+ *                version field is.
+ */
 void logVersionFieldWrite(uint32_t address)
 {
-    if (version_field_index < (int)(sizeof(version_field_writes) / sizeof(uint32_t)))
-        version_field_writes[version_field_index++] = address;
+	if (version_field_index < (int)(sizeof(version_field_writes) / sizeof(uint32_t)))
+		version_field_writes[version_field_index++] = address;
 }
 
 /** Clear the list of version field writes. */
 void clearVersionFieldWriteLog(void)
 {
-    version_field_index = 0;
+	version_field_index = 0;
 }
 
 /** Call all wallet functions which accept a wallet number and check
-  * that they fail or succeed for a given wallet number.
-  * \param wallet_spec The wallet number to check.
-  * \param should_succeed true if the wallet number is valid (and thus the
-  *                       wallet functions should succeed), false if the wallet
-  *                       number is not valid (and thus the wallet functions
-  *                       should fail).
-  */
+ * that they fail or succeed for a given wallet number.
+ * \param wallet_spec The wallet number to check.
+ * \param should_succeed true if the wallet number is valid (and thus the
+ *                       wallet functions should succeed), false if the wallet
+ *                       number is not valid (and thus the wallet functions
+ *                       should fail).
+ */
 static void checkWalletSpecFunctions(uint32_t wallet_spec, bool should_succeed)
 {
 	uint8_t wallet_uuid[UUID_LENGTH];
@@ -149,8 +141,8 @@ static void checkWalletSpecFunctions(uint32_t wallet_spec, bool should_succeed)
 }
 
 /** Call nearly all wallet functions and make sure they
-  * return #WALLET_NOT_LOADED somehow. This should only be called if a wallet
-  * is not loaded. */
+ * return #WALLET_NOT_LOADED somehow. This should only be called if a wallet
+ * is not loaded. */
 static void checkFunctionsReturnWalletNotLoaded(void)
 {
 	uint8_t temp[128];
@@ -237,7 +229,7 @@ void initialiseTestsWallet(void)
 	tests_failed = 0;
 	tests_passed = 0;
 
-	srand(42);	/* Make sure tests which rely on rand() are deterministic */
+	srand(42); /* Make sure tests which rely on rand() are deterministic */
 
 	printf("\n\n=====================================================================================================================================================\n");
 
@@ -265,14 +257,14 @@ void finaliseTestsWallet(void)
 
 	is_test = false;
 	is_test_wallet = false;
-	suppress_write_debug_info = true;	/* To save some printing time for the next tests */
+	suppress_write_debug_info = true; /* To save some printing time for the next tests */
 
-	time_spent = ((double) (finish_time - start_time)) / CLOCKS_PER_SEC;
+	time_spent = ((double)(finish_time - start_time)) / CLOCKS_PER_SEC;
 
 	closeWalletStorage();
 	deleteWalletStorage();
 
-	srand((unsigned) time(&t));
+	srand((unsigned)time(&t));
 
 	printf("\n=====================================================================================================================================================\n");
 
@@ -283,7 +275,7 @@ void finaliseTestsWallet(void)
 	printf("=====================================================================================================================================================\n\n");
 }
 
-void TestWallet(statistics * stats)
+void TestWallet(statistics *stats)
 {
 	uint8_t temp[128];
 	int i;
@@ -339,7 +331,7 @@ void TestWallet(statistics * stats)
 
 	for (i = 0; i < (GLOBAL_PARTITION_SIZE + ACCOUNTS_PARTITION_SIZE); i++)
 		nonVolatileWrite1Byte(temp);
-		//fwrite(temp, 1, 1, wallet_storage_file);
+	// fwrite(temp, 1, 1, wallet_storage_file);
 
 	/* Check that sanitiseEverything() is able to function with NV storage in this state. */
 	printf("Check that sanitiseEverything() is able to function with NV storage in this state\n");
@@ -368,7 +360,7 @@ void TestWallet(statistics * stats)
 
 	for (i = 0; i < (GLOBAL_PARTITION_SIZE + ACCOUNTS_PARTITION_SIZE); i++)
 	{
-		//fread(temp, 1, 1, wallet_storage_file);
+		// fread(temp, 1, 1, wallet_storage_file);
 		nonVolatileRead1Byte(temp);
 		histogram[temp[0]]++;
 		histogram_count++;
@@ -393,10 +385,7 @@ void TestWallet(statistics * stats)
 	/* Check that sanitiseEverything() overwrote everything. */
 	printf("Check that sanitiseEverything() overwrote everything.\n");
 
-	if ((minimum_address_written[PARTITION_GLOBAL] != 0)
-		|| (maximum_address_written[PARTITION_GLOBAL] != (GLOBAL_PARTITION_SIZE - 1))
-		|| (minimum_address_written[PARTITION_ACCOUNTS] != 0)
-		|| (maximum_address_written[PARTITION_ACCOUNTS] != (ACCOUNTS_PARTITION_SIZE - 1)))
+	if ((minimum_address_written[PARTITION_GLOBAL] != 0) || (maximum_address_written[PARTITION_GLOBAL] != (GLOBAL_PARTITION_SIZE - 1)) || (minimum_address_written[PARTITION_ACCOUNTS] != 0) || (maximum_address_written[PARTITION_ACCOUNTS] != (ACCOUNTS_PARTITION_SIZE - 1)))
 	{
 		printf("sanitiseEverything() did not overwrite everything\n");
 		reportFailureWallet();
@@ -1015,9 +1004,7 @@ void TestWallet(statistics * stats)
 			break;
 		}
 
-		if ((memcmp(address1, &(address_buffer[i * 20]), 20))
-			|| (bigCompare(public_key.x, public_key_buffer[i].x) != BIGCMP_EQUAL)
-			|| (bigCompare(public_key.y, public_key_buffer[i].y) != BIGCMP_EQUAL))
+		if ((memcmp(address1, &(address_buffer[i * 20]), 20)) || (bigCompare(public_key.x, public_key_buffer[i].x) != BIGCMP_EQUAL) || (bigCompare(public_key.y, public_key_buffer[i].y) != BIGCMP_EQUAL))
 		{
 			printf("getAddressAndPublicKey() returned mismatching address or public key, ah = %d\n", i);
 			abort = true;
@@ -1286,7 +1273,7 @@ void TestWallet(statistics * stats)
 	}
 
 	memcpy(seed1, test_wallet_backup, SEED_LENGTH);
-	makeNewAddress(address1, &public_key);	/* Save this for later */
+	makeNewAddress(address1, &public_key); /* Save this for later */
 
 	/* Test wallet backup to invalid device. */
 	printf("Test wallet backup to invalid device\n");
@@ -1425,15 +1412,15 @@ void TestWallet(statistics * stats)
 	 */
 	printf("Test that sanitiseNonVolatileStorage() clears the correct area\n");
 
-	suppress_write_debug_info = true;	/* Stop console from going crazy */
-	suppress_set_entropy_pool = true;	/* Avoid spurious entropy pool update writes */
+	suppress_write_debug_info = true; /* Stop console from going crazy */
+	suppress_set_entropy_pool = true; /* Avoid spurious entropy pool update writes */
 
 	abort = false;
 
-	//for (i = 0; i < 2000; i++)
+	// for (i = 0; i < 2000; i++)
 	for (i = 0; i < 50; i++)
 	{
-		initialiseDefaultEntropyPool();	/* Needed in case pool or checksum gets corrupted by writes */
+		initialiseDefaultEntropyPool(); /* Needed in case pool or checksum gets corrupted by writes */
 
 		minimum_address_written[PARTITION_ACCOUNTS] = 0xffffffff;
 		maximum_address_written[PARTITION_ACCOUNTS] = 0;
@@ -1448,8 +1435,7 @@ void TestWallet(statistics * stats)
 		{
 			sanitiseNonVolatileStorage(PARTITION_ACCOUNTS, start_address, end_address - start_address);
 
-			if ((minimum_address_written[PARTITION_ACCOUNTS] != start_address)
-				|| (maximum_address_written[PARTITION_ACCOUNTS] != (end_address - 1)))
+			if ((minimum_address_written[PARTITION_ACCOUNTS] != start_address) || (maximum_address_written[PARTITION_ACCOUNTS] != (end_address - 1)))
 			{
 				printf("sanitiseNonVolatileStorage() not clearing correct area\n");
 				printf("start = 0x%08x, end = 0x%08x\n", start_address, end_address);
@@ -1466,7 +1452,7 @@ void TestWallet(statistics * stats)
 	/* Also check that sanitiseNonVolatileStorage() does nothing if length is 0. */
 	printf("Also check that sanitiseNonVolatileStorage() does nothing if length is 0\n");
 
-	initialiseDefaultEntropyPool();	/* Needed in case pool or checksum gets corrupted by writes */
+	initialiseDefaultEntropyPool(); /* Needed in case pool or checksum gets corrupted by writes */
 
 	minimum_address_written[PARTITION_ACCOUNTS] = 0xffffffff;
 	maximum_address_written[PARTITION_ACCOUNTS] = 0;
@@ -1487,11 +1473,11 @@ void TestWallet(statistics * stats)
 	/* Check that sanitiseNonVolatileStorage() is clearing the correct version fields of any wallets in range. */
 	printf("Check that sanitiseNonVolatileStorage() is clearing the correct version fields of any wallets in range\n");
 
-	suppress_write_debug_info = true;	/* Stop console from going crazy */
+	suppress_write_debug_info = true; /* Stop console from going crazy */
 	suppress_set_entropy_pool = false;
 	abort = false;
 
-	//for (i = 0; i < 5000; i++)
+	// for (i = 0; i < 5000; i++)
 	for (i = 0; i < 50; i++)
 	{
 		start_address = (uint32_t)((rand() % ACCOUNTS_PARTITION_SIZE) & 0xfffffffc);
@@ -1500,7 +1486,7 @@ void TestWallet(statistics * stats)
 		if (end_address > ACCOUNTS_PARTITION_SIZE)
 			end_address = ACCOUNTS_PARTITION_SIZE;
 
-		initialiseDefaultEntropyPool();	/* Needed in case pool or checksum gets corrupted by writes */
+		initialiseDefaultEntropyPool(); /* Needed in case pool or checksum gets corrupted by writes */
 		clearVersionFieldWriteLog();
 		sanitiseNonVolatileStorage(PARTITION_ACCOUNTS, start_address, end_address - start_address);
 
@@ -1540,7 +1526,7 @@ void TestWallet(statistics * stats)
 			}
 
 			version_field_address += sizeof(WalletRecord);
-		}	/* End while ((version_field_address + 4) <= ACCOUNTS_PARTITION_SIZE) */
+		} /* End while ((version_field_address + 4) <= ACCOUNTS_PARTITION_SIZE) */
 
 		if (abort)
 			break;
@@ -1557,12 +1543,12 @@ void TestWallet(statistics * stats)
 			abort = true;
 			break;
 		}
-	}	/* End for (i = 0; i < 5000; i++) */
+	} /* End for (i = 0; i < 5000; i++) */
 
 	if (!abort)
 		reportSuccessWallet();
 
-	suppress_write_debug_info = false;	/* can start reporting writes again */
+	suppress_write_debug_info = false; /* can start reporting writes again */
 
 	/* Check that sanitising the global partition does not touch any version fields. */
 	printf("Check that sanitising the global partition does not touch any version fields\n");
@@ -1616,7 +1602,7 @@ void TestWallet(statistics * stats)
 	for (i = ACCOUNTS_PARTITION_SIZE; i < ACCOUNTS_PARTITION_SIZE + 1024; i++)
 	{
 		accounts_partition_size = i;
-		num_wallets = 0;	/* Reset cache */
+		num_wallets = 0; /* Reset cache */
 		returned_num_wallets = getNumberOfWallets();
 
 		if (returned_num_wallets == 0)
@@ -1648,21 +1634,21 @@ void TestWallet(statistics * stats)
 		reportSuccessWallet();
 
 	accounts_partition_size = ACCOUNTS_PARTITION_SIZE;
-	num_wallets = 0;	/* Reset cache for next test */
+	num_wallets = 0; /* Reset cache for next test */
 
 	/* For all functions which accept wallet numbers, try some wallet numbers which are in or out of range. */
 	printf("For all functions which accept wallet numbers, try some wallet numbers which are in or out of range\n");
 
 	returned_num_wallets = getNumberOfWallets();
-	checkWalletSpecFunctions(0, true);	/* First one */
+	checkWalletSpecFunctions(0, true); /* First one */
 
 	/* The next line does assume that returned_num_wallets > 1. */
-	checkWalletSpecFunctions(returned_num_wallets - 1, true);	/* Last one */
-	checkWalletSpecFunctions(returned_num_wallets, false);		/* Out of range */
+	checkWalletSpecFunctions(returned_num_wallets - 1, true); /* Last one */
+	checkWalletSpecFunctions(returned_num_wallets, false);	  /* Out of range */
 
 	/* The next line does assume that returned_num_wallets != 0xffffffff. */
-	checkWalletSpecFunctions(returned_num_wallets + 1, false);	/* Out of range */
-	checkWalletSpecFunctions(0xffffffff, false);				/* Out of range */
+	checkWalletSpecFunctions(returned_num_wallets + 1, false); /* Out of range */
+	checkWalletSpecFunctions(0xffffffff, false);			   /* Out of range */
 
 	/*
 	 * Create one wallet and some addresses, then create another wallet with a
@@ -2233,7 +2219,7 @@ void TestWallet(statistics * stats)
 	/* Check that sanitisePartition() only affects one partition. */
 	printf("Check that sanitisePartition() only affects one partition\n");
 
-	suppress_set_entropy_pool = true;	/* Avoid spurious writes to global partition */
+	suppress_set_entropy_pool = true; /* Avoid spurious writes to global partition */
 
 	memset(copy_of_nv, 0, sizeof(copy_of_nv));
 	memset(copy_of_nv2, 1, sizeof(copy_of_nv2));
@@ -2286,7 +2272,7 @@ void TestWallet(statistics * stats)
 	else
 		reportSuccessWallet();
 
-	//fclose(wallet_storage_file);
+	// fclose(wallet_storage_file);
 
 	finaliseTestsWallet();
 

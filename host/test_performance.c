@@ -1,9 +1,9 @@
 /** \file
-  *
-  * \brief TO DO YET!!!!
-  *
-  * This file is licensed as described by the file LICENCE.
-  */
+ *
+ * \brief TO DO YET!!!!
+ *
+ * This file is licensed as described by the file LICENCE.
+ */
 
 #include "common.h"
 #include "extern.h"
@@ -16,14 +16,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 
-int tests_passed;
-int tests_failed;
-int tests_total;
-clock_t start_time;
-clock_t finish_time;
-double time_spent;
 clock_t start_test_time;
 clock_t finish_test_time;
 double test_time;
@@ -68,7 +61,6 @@ void initialiseTestsPerformance(void)
 	printf("=====================================================================================================================================================\n");
 
 	start_time = clock();
-
 }
 
 void finaliseTestsPerformance(void)
@@ -77,7 +69,7 @@ void finaliseTestsPerformance(void)
 
 	finish_time = clock();
 
-	time_spent = ((double) (finish_time - start_time)) / CLOCKS_PER_SEC;
+	time_spent = ((double)(finish_time - start_time)) / CLOCKS_PER_SEC;
 
 	is_test = false;
 	is_test_stream = false;
@@ -85,7 +77,7 @@ void finaliseTestsPerformance(void)
 	closeWalletStorage();
 	deleteWalletStorage();
 
-	srand((unsigned) time(&t));
+	srand((unsigned)time(&t));
 
 	printf("\n=====================================================================================================================================================\n");
 
@@ -100,9 +92,9 @@ void finaliseTestsPerformance(void)
 	printTime(total_test_time);
 }
 
-void startTest(char * test_description)
+void startTest(char *test_description)
 {
-	//printf("=====================================================================================================================================================\n");
+	// printf("=====================================================================================================================================================\n");
 	printf("%s\n", test_description);
 
 	start_test_time = clock();
@@ -114,7 +106,7 @@ void finishTest(void)
 
 	/* TODO Remove CLOCKS_PER_SEC */
 
-	test_time = ((double) (finish_test_time - start_test_time)) / CLOCKS_PER_SEC;
+	test_time = ((double)(finish_test_time - start_test_time)) / CLOCKS_PER_SEC;
 	total_test_time += test_time;
 
 	printTime(test_time);
@@ -122,7 +114,7 @@ void finishTest(void)
 	printf("=====================================================================================================================================================\n");
 }
 
-void TestPerformance(statistics * stats)
+void TestPerformance(statistics *stats)
 {
 	NonVolatileReturn response;
 	uint8_t buffer[NV_MEMORY_SIZE];
@@ -184,7 +176,7 @@ void TestPerformance(statistics * stats)
 	/* Read from the accounts partition */
 	startTest("Reading from the accounts partition (at once). Read from cache.");
 
-	response = nonVolatileRead(buffer + sizeof(uint8_t)*(GLOBAL_PARTITION_SIZE), PARTITION_ACCOUNTS, 0, ACCOUNTS_PARTITION_SIZE);
+	response = nonVolatileRead(buffer + sizeof(uint8_t) * (GLOBAL_PARTITION_SIZE), PARTITION_ACCOUNTS, 0, ACCOUNTS_PARTITION_SIZE);
 
 	if (response != NV_NO_ERROR)
 	{
@@ -240,7 +232,7 @@ void TestPerformance(statistics * stats)
 	/* Read from the accounts partition when data isn't cached */
 	startTest("Reading from the accounts partition (at once). Read from secure storage.");
 
-	response = nonVolatileRead(buffer + sizeof(uint8_t)*(GLOBAL_PARTITION_SIZE), PARTITION_ACCOUNTS, 0, ACCOUNTS_PARTITION_SIZE);
+	response = nonVolatileRead(buffer + sizeof(uint8_t) * (GLOBAL_PARTITION_SIZE), PARTITION_ACCOUNTS, 0, ACCOUNTS_PARTITION_SIZE);
 
 	if (response != NV_NO_ERROR)
 	{
