@@ -23,44 +23,53 @@
  * This never returns. */
 int main(int argc, char const *argv[])
 {
+	setvbuf(stdin, NULL, _IONBF, 0);
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(stderr, NULL, _IONBF, 0);
+
 #ifdef TESTING
 	statistics tests_stats;
 
+	printf("[+] Initialize extern variables\n");
 	initialiseExternVariables();
+	printf("[+] Initialize stats\n");
 	initialiseStats(&tests_stats);
 
-	// initialiseTZ();
-	// TestPerformance(&tests_stats);
-	// terminateTZ();
-
 	initialiseTZ();
-	TestPerformanceStreams(&tests_stats);
+	TestPerformance(&tests_stats);
 	terminateTZ();
 
-	// initialiseTZ();
-	// TestPrandom(&tests_stats);
-	// terminateTZ();
+	printf("[+] Initialize tz\n");
+	initialiseTZ();
+	printf("[+] Test performance streams\n");
+	TestPerformanceStreams(&tests_stats);
+	printf("[+] Terminate tz\n");
+	terminateTZ();
 
-	// initialiseTZ();
-	// TestWallet(&tests_stats);
-	// terminateTZ();
+	initialiseTZ();
+	TestPrandom(&tests_stats);
+	terminateTZ();
 
-	// initialiseTZ();
-	// TestTransaction(&tests_stats);
-	// terminateTZ();
+	initialiseTZ();
+	TestWallet(&tests_stats);
+	terminateTZ();
+
+	initialiseTZ();
+	TestTransaction(&tests_stats);
+	terminateTZ();
 
 	/* TODO REMOVE THIS TEST? IT IS THE SAME THING ALMOST */
 	// TestStreams(&tests_stats);
 
-	printf("\n=====================================================================================================================================================\n");
+	// printf("\n=====================================================================================================================================================\n");
 
-	printf("Global statistics\n\n");
+	// printf("Global statistics\n\n");
 
-	printStatistics(tests_stats.passed, tests_stats.failed, tests_stats.total, tests_stats.time);
+	// printStatistics(tests_stats.passed, tests_stats.failed, tests_stats.total, tests_stats.time);
 
-	printf("=====================================================================================================================================================\n\n");
+	// printf("=====================================================================================================================================================\n\n");
 
-	printf("\n");
+	// printf("\n");
 
 #else
 
