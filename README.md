@@ -1,7 +1,6 @@
-Information
-------------
+# Hardware Bitcoin Wallet
 
-Hardware Bitcoin Wallet
+> OPTEE OS 3.21.0
 
 Initially created by [someone42]
 (https://github.com/someone42/hardware-bitcoin-wallet) and modified
@@ -13,3 +12,8 @@ transactions. In order to do this, the wallet also stores and manages private
 keys, but it does not store anything else. The wallet is not aware of the
 blockchain and communicates with a BitCoin client ("the host" from the point
 of view of the code here) via. a point-to-point stream-based link.
+
+## Tips
+
+- Enable `CFG_HMAC_64_1024_RANGE` in `optee_os/mk/config.mk`
+
