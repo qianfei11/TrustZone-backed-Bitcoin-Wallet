@@ -22,9 +22,9 @@
 /** This is only used as a testing variable  */
 WalletRecord test_wallet;
 
-const uint8_t test_password0[] = "1234";
+const uint8_t test_password0[] = "12345678";
 const uint8_t test_password1[] = "ABCDEFGHJ!!!!";
-const uint8_t new_test_password[] = "new password";
+const uint8_t new_test_password[] = "new password??????";
 
 void reportFailureWallet(void)
 {

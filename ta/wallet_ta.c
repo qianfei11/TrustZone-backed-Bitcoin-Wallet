@@ -1892,6 +1892,11 @@ static TEE_Result set_hmac_sha512_key_internal(Session_data *session_data, const
 	TEE_Result result = TEE_SUCCESS;
 	TEE_ObjectHandle hmac_key = TEE_HANDLE_NULL;
 	TEE_Attribute key_attribute;
+	uint32_t size;
+	char *key_tmp;
+
+	key_tmp = key;
+	size = key_length;
 
 	/* Allocate an transient object that will held the key */
 	result = TEE_AllocateTransientObject(
@@ -1913,8 +1918,8 @@ static TEE_Result set_hmac_sha512_key_internal(Session_data *session_data, const
 	TEE_InitRefAttribute(
 		&key_attribute,
 		TEE_ATTR_SECRET_VALUE,
-		(uint8_t *)key,
-		(unsigned int)key_length);
+		key_tmp,
+		size);
 
 	/* Now use the attribute the set the key into the transient object */
 	result = TEE_PopulateTransientObject(hmac_key, &key_attribute, 1);

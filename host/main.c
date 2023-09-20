@@ -30,25 +30,20 @@ int main(int argc, char const *argv[])
 #ifdef TESTING
 	statistics tests_stats;
 
-	printf("[+] Initialize extern variables\n");
 	initialiseExternVariables();
-	printf("[+] Initialize stats\n");
 	initialiseStats(&tests_stats);
 
-	initialiseTZ();
-	TestPerformance(&tests_stats);
-	terminateTZ();
+	// initialiseTZ();
+	// TestPerformance(&tests_stats);
+	// terminateTZ();
 
-	printf("[+] Initialize tz\n");
-	initialiseTZ();
-	printf("[+] Test performance streams\n");
-	TestPerformanceStreams(&tests_stats);
-	printf("[+] Terminate tz\n");
-	terminateTZ();
+	// initialiseTZ();
+	// TestPerformanceStreams(&tests_stats);
+	// terminateTZ();
 
-	initialiseTZ();
-	TestPrandom(&tests_stats);
-	terminateTZ();
+	// initialiseTZ();
+	// TestPrandom(&tests_stats);
+	// terminateTZ();
 
 	initialiseTZ();
 	TestWallet(&tests_stats);
