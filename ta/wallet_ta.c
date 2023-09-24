@@ -1422,6 +1422,8 @@ static TEE_Result sha256_update(Session_data *session_data, uint32_t param_types
 {
 	int sha_op_selc;
 	uint32_t exp_param_types;
+	char *data;
+	size_t length;
 
 	/*
 	 * Expected:
@@ -1439,6 +1441,12 @@ static TEE_Result sha256_update(Session_data *session_data, uint32_t param_types
 	if (exp_param_types != param_types)
 		return TEE_ERROR_BAD_PARAMETERS;
 
+	length = params[0].memref.size;
+	data = TEE_Malloc(length, 0);
+	if (!data)
+		return TEE_ERROR_OUT_OF_MEMORY;
+	TEE_MemMove(data, (uint8_t *)(params[0].memref.buffer), length);
+
 	/* Get the desired SHA-256 operation handle number */
 	sha_op_selc = (int)(params[1].value.a);
 
@@ -1447,27 +1455,31 @@ static TEE_Result sha256_update(Session_data *session_data, uint32_t param_types
 	{
 	case 1:
 		TEE_DigestUpdate(*(session_data->sha_op1),
-						 (uint8_t *)(params[0].memref.buffer),
-						 (uint32_t)(params[0].memref.size));
+						 data,
+						 length);
 		break;
 	case 2:
 		TEE_DigestUpdate(*(session_data->sha_op2),
-						 (uint8_t *)(params[0].memref.buffer),
-						 (uint32_t)(params[0].memref.size));
+						 data,
+						 length);
 		break;
 	case 3:
 		TEE_DigestUpdate(*(session_data->sha_op3),
-						 (uint8_t *)(params[0].memref.buffer),
-						 (uint32_t)(params[0].memref.size));
+						 data,
+						 length);
 		break;
 	case 4:
 		TEE_DigestUpdate(*(session_data->sha_op4),
-						 (uint8_t *)(params[0].memref.buffer),
-						 (uint32_t)(params[0].memref.size));
+						 data,
+						 length);
 		break;
 	default:
 		return TEE_ERROR_BAD_PARAMETERS;
 	};
+
+	params[0].memref.size = length;
+	TEE_MemMove((uint8_t *)(params[0].memref.buffer), data, length);
+	TEE_Free(data);
 
 	return TEE_SUCCESS;
 }
@@ -1487,6 +1499,7 @@ static TEE_Result sha256_final(Session_data *session_data, uint32_t param_types,
 	int sha_op_selc;
 	uint32_t exp_param_types;
 	uint32_t written_hash_length;
+	char *data;
 
 	/*
 	 * Expected:
@@ -1505,6 +1518,10 @@ static TEE_Result sha256_final(Session_data *session_data, uint32_t param_types,
 		return TEE_ERROR_BAD_PARAMETERS;
 
 	written_hash_length = (uint32_t)params[0].memref.size;
+	data = TEE_Malloc(written_hash_length, 0);
+	if (!data)
+		return TEE_ERROR_OUT_OF_MEMORY;
+	TEE_MemMove(data, (uint8_t *)(params[0].memref.buffer), written_hash_length);
 
 	/* Get the desired SHA-256 operation handle number */
 	sha_op_selc = (int)(params[1].value.a);
@@ -1516,28 +1533,28 @@ static TEE_Result sha256_final(Session_data *session_data, uint32_t param_types,
 		result = TEE_DigestDoFinal(*(session_data->sha_op1),
 								   NULL,
 								   0,
-								   (uint8_t *)(params[0].memref.buffer),
+								   data,
 								   &written_hash_length);
 		break;
 	case 2:
 		result = TEE_DigestDoFinal(*(session_data->sha_op2),
 								   NULL,
 								   0,
-								   (uint8_t *)(params[0].memref.buffer),
+								   data,
 								   &written_hash_length);
 		break;
 	case 3:
 		result = TEE_DigestDoFinal(*(session_data->sha_op3),
 								   NULL,
 								   0,
-								   (uint8_t *)(params[0].memref.buffer),
+								   data,
 								   &written_hash_length);
 		break;
 	case 4:
 		result = TEE_DigestDoFinal(*(session_data->sha_op4),
 								   NULL,
 								   0,
-								   (uint8_t *)(params[0].memref.buffer),
+								   data,
 								   &written_hash_length);
 		break;
 	default:
@@ -1554,6 +1571,8 @@ static TEE_Result sha256_final(Session_data *session_data, uint32_t param_types,
 
 	/* Update size to the one actually hashed */
 	params[0].memref.size = (uint32_t)written_hash_length;
+	TEE_MemMove((uint8_t *)(params[0].memref.buffer), data, written_hash_length);
+	TEE_Free(data);
 
 cleanup1:
 	return result;
@@ -2481,14 +2500,12 @@ static TEE_Result create_wallet_storage(Session_data *session_data, uint32_t par
 	 */
 	if (param_types != exp_param_types || params[0].memref.buffer == NULL)
 		return TEE_ERROR_BAD_PARAMETERS;
-	DMSG("buffer: %s, size: %d\n", params[0].memref.buffer, params[0].memref.size);
 
 	id_size = params[0].memref.size;
 	id_name = TEE_Malloc(id_size, 0);
 	if (!id_name)
 		return TEE_ERROR_OUT_OF_MEMORY;
 	TEE_MemMove(id_name, params[0].memref.buffer, id_size);
-	DMSG("id_name: %s, id_size: %d\n", id_name, id_size);
 
 	/* Check if the storage was already open or created */
 	if (session_data->is_storage_open == true || session_data->is_storage_created == true)
@@ -2509,7 +2526,6 @@ static TEE_Result create_wallet_storage(Session_data *session_data, uint32_t par
 		NULL,
 		0,
 		session_data->wallet_handle);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -2541,7 +2557,6 @@ static TEE_Result create_wallet_storage(Session_data *session_data, uint32_t par
 	 */
 	result = TEE_TruncateObjectData(*(session_data->wallet_handle),
 									NV_MEMORY_SIZE);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -2612,7 +2627,6 @@ static TEE_Result open_wallet_storage(Session_data *session_data, uint32_t param
 		session_data->storageIDLen,
 		flags,
 		session_data->wallet_handle);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -5753,9 +5767,7 @@ static TEE_Result set_entropy_pool(Session_data *session_data, uint32_t param_ty
 	result = write_cache_wallet_storage(session_data,
 										write_param_types,
 										write_params);
-
 	nv_error = (NonVolatileReturn)(write_params[1].value.b);
-
 	if (result != TEE_SUCCESS || nv_error != NV_NO_ERROR)
 	{
 #ifdef OP_TEE_TA
@@ -5774,9 +5786,7 @@ static TEE_Result set_entropy_pool(Session_data *session_data, uint32_t param_ty
 	result = write_cache_wallet_storage(session_data,
 										write_param_types2,
 										write_params2);
-
 	nv_error = (NonVolatileReturn)(write_params2[1].value.b);
-
 	if (result != TEE_SUCCESS || nv_error != NV_NO_ERROR)
 	{
 #ifdef OP_TEE_TA
@@ -5786,7 +5796,6 @@ static TEE_Result set_entropy_pool(Session_data *session_data, uint32_t param_ty
 	}
 
 	result = flush_wallet_storage_internal(session_data, &nv_error);
-
 	if (result != TEE_SUCCESS || nv_error != NV_NO_ERROR)
 	{
 #ifdef OP_TEE_TA
@@ -5858,7 +5867,6 @@ static TEE_Result get_entropy_pool(Session_data *session_data, uint32_t param_ty
 	result = read_cache_wallet_storage(session_data,
 									   read_param_types,
 									   read_params);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -5878,7 +5886,6 @@ static TEE_Result get_entropy_pool(Session_data *session_data, uint32_t param_ty
 	result = read_cache_wallet_storage(session_data,
 									   read_param_types2,
 									   read_params2);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -5999,9 +6006,7 @@ static TEE_Result write_current_wallet_record(Session_data *session_data, uint32
 	result = write_cache_wallet_storage(session_data,
 										write_param_types,
 										write_params);
-
 	nv_error = (NonVolatileReturn)(write_params[1].value.b);
-
 	if (result != TEE_SUCCESS || nv_error != NV_NO_ERROR)
 	{
 #ifdef OP_TEE_TA
@@ -6017,7 +6022,6 @@ static TEE_Result write_current_wallet_record(Session_data *session_data, uint32
 		sizeof(session_data->current_wallet->encrypted),
 		(uint32_t)(params[0].value.a + sizeof(session_data->current_wallet->unencrypted) + GLOBAL_PARTITION_SIZE),
 		&nv_error);
-
 	if (result != TEE_SUCCESS || nv_error != NV_NO_ERROR)
 	{
 #ifdef OP_TEE_TA
@@ -6028,7 +6032,6 @@ static TEE_Result write_current_wallet_record(Session_data *session_data, uint32
 
 	/* Flush the write cache */
 	result = flush_wallet_storage_internal(session_data, &nv_error);
-
 	if (result != TEE_SUCCESS || nv_error != NV_NO_ERROR)
 	{
 #ifdef OP_TEE_TA
@@ -6128,7 +6131,6 @@ static TEE_Result derive_and_set_encryption_key(Session_data *session_data, uint
 		TEE_MemFill((uint8_t *)derived_key, 0, (uint32_t)sizeof(derived_key));
 
 		result = set_encryption_key_internal(session_data, derived_key);
-
 		if (result != TEE_SUCCESS)
 		{
 #ifdef OP_TEE_TA
@@ -6251,6 +6253,11 @@ static TEE_Result calculate_wallet_checksum_internal(Session_data *session_data,
 
 	/* Finalize the hashing operation */
 	result = sha256_final_internal(session_data, hash, (uint32_t)32);
+	printf("hash = ");
+	for (int i = 0; i < 8; i++) {
+		printf("0x%lx ", hash[i]);
+	}
+	printf("\n");
 
 	if (result != TEE_SUCCESS)
 	{
@@ -6262,6 +6269,12 @@ static TEE_Result calculate_wallet_checksum_internal(Session_data *session_data,
 
 	/* Convert the hash to an byte array */
 	write_hash_to_byte_array_internal(checksum, hash, true);
+	printf("checksum = ");
+	for (int i = 0; i < 32; i++)
+	{
+		printf("0x%lx ", checksum[i]);
+	}
+	printf("\n");
 
 /* Resources cleanup */
 cleanup1:
@@ -6613,7 +6626,7 @@ static TEE_Result change_encryption_key(Session_data *session_data, uint32_t par
 		TEE_PARAM_TYPE_NONE);
 
 	/* Some sanity checks */
-	if (param_types != exp_param_types || params[0].memref.buffer == NULL)
+	if (param_types != exp_param_types) // remove NULL checking for buffer
 		return TEE_ERROR_BAD_PARAMETERS;
 
 	/* Check if the wallet is loaded */
@@ -6658,7 +6671,6 @@ static TEE_Result change_encryption_key(Session_data *session_data, uint32_t par
 	if (!(session_data->is_hidden_wallet))
 	{
 		result = update_wallet_version(session_data, uwv_param_types, NULL);
-
 		if (result != TEE_SUCCESS)
 		{
 #ifdef OP_TEE_TA
@@ -6923,7 +6935,6 @@ static TEE_Result init_wallet(Session_data *session_data, uint32_t param_types, 
 	result = read_cache_wallet_storage(session_data,
 									   read_param_types,
 									   read_params);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -6942,7 +6953,6 @@ static TEE_Result init_wallet(Session_data *session_data, uint32_t param_types, 
 	result = derive_and_set_encryption_key(session_data,
 										   dasec_param_types,
 										   dasec_params);
-
 	if (result != TEE_SUCCESS)
 	{
 /* Here should be an generic error but as it is not available ... */
@@ -6959,7 +6969,6 @@ static TEE_Result init_wallet(Session_data *session_data, uint32_t param_types, 
 	rwr_params[1].value.a = session_data->wallet_nv_address;
 
 	result = read_wallet_record(session_data, rwr_param_types, rwr_params);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -6990,7 +6999,6 @@ static TEE_Result init_wallet(Session_data *session_data, uint32_t param_types, 
 
 	/* Calculate the wallet checksum and check if it matches */
 	result = calculate_wallet_checksum_internal(session_data, hash);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -7375,7 +7383,6 @@ static TEE_Result new_wallet(Session_data *session_data, uint32_t param_types, T
 	rwr_params[1].value.a = session_data->wallet_nv_address;
 
 	result = read_wallet_record(session_data, rwr_param_types, rwr_params);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -7431,7 +7438,6 @@ static TEE_Result new_wallet(Session_data *session_data, uint32_t param_types, T
 		session_data,
 		dasec_param_types,
 		dasec_params);
-
 	if (result != TEE_SUCCESS)
 	{
 /* Here should be an generic error but as it is not available ... */
@@ -7446,7 +7452,6 @@ static TEE_Result new_wallet(Session_data *session_data, uint32_t param_types, T
 	if (!(aux_params->make_hidden))
 	{
 		result = update_wallet_version(session_data, uwv_param_types, NULL);
-
 		if (result != TEE_SUCCESS)
 		{
 #ifdef OP_TEE_TA
@@ -7518,7 +7523,6 @@ static TEE_Result new_wallet(Session_data *session_data, uint32_t param_types, T
 	result = calculate_wallet_checksum_internal(
 		session_data,
 		session_data->current_wallet->encrypted.checksum);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -7541,7 +7545,6 @@ static TEE_Result new_wallet(Session_data *session_data, uint32_t param_types, T
 		session_data,
 		wcwr_param_types,
 		wcwr_params);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA

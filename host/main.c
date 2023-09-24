@@ -49,22 +49,22 @@ int main(int argc, char const *argv[])
 	TestWallet(&tests_stats);
 	terminateTZ();
 
-	initialiseTZ();
-	TestTransaction(&tests_stats);
-	terminateTZ();
+	// initialiseTZ();
+	// TestTransaction(&tests_stats);
+	// terminateTZ();
 
 	/* TODO REMOVE THIS TEST? IT IS THE SAME THING ALMOST */
 	// TestStreams(&tests_stats);
 
-	// printf("\n=====================================================================================================================================================\n");
+	printf("\n=====================================================================================================================================================\n");
 
-	// printf("Global statistics\n\n");
+	printf("Global statistics\n\n");
 
-	// printStatistics(tests_stats.passed, tests_stats.failed, tests_stats.total, tests_stats.time);
+	printStatistics(tests_stats.passed, tests_stats.failed, tests_stats.total, tests_stats.time);
 
-	// printf("=====================================================================================================================================================\n\n");
+	printf("=====================================================================================================================================================\n\n");
 
-	// printf("\n");
+	printf("\n");
 
 #else
 

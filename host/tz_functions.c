@@ -1502,7 +1502,6 @@ void generateDeterministicPublicKeyTestTZ(PointAffine *out_public_key, PointAffi
         CMD_GENERATE_D_PUB_KEY_TEST,
         &operation,
         &error_origin);
-
     if (result != TEEC_SUCCESS)
         errx(1, "TEEC_InvokeCommand for CMD_GENERATE_D_PUB_KEY_TEST failed with code 0x%x origin 0x%x\n", result, error_origin);
 }
@@ -1524,7 +1523,6 @@ void clearParentPublicKeyCacheTZ(void)
         CMD_CLEAR_PRT_PUB_CACHE,
         NULL,
         &error_origin);
-
     if (result != TEEC_SUCCESS)
         errx(1, "TEEC_InvokeCommand for CMD_CLEAR_PRT_PUB_CACHE failed with code 0x%x origin 0x%x\n", result, error_origin);
 }
@@ -1611,7 +1609,6 @@ bool setEntropyPoolTZ(uint8_t *in_pool_state)
         CMD_SET_ENTROPY_POOL,
         &operation,
         &error_origin);
-
     if (result != TEEC_SUCCESS)
     {
 #ifdef DEBUG
@@ -2279,7 +2276,6 @@ WalletErrors changeEncryptionKeyTZ(const uint8_t *password, const unsigned int p
         CMD_CHANGE_ENCRYPTION_KEY,
         &operation,
         &error_origin);
-
     if (result != TEEC_SUCCESS)
     {
         if (result == TEEC_ERROR_BAD_STATE)
