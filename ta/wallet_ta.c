@@ -325,7 +325,6 @@ TEE_Result TA_OpenSessionEntryPoint(uint32_t param_types, TEE_Param params[4], v
 	 * will be used
 	 */
 	data = TEE_Malloc(sizeof(Session_data), TEE_MALLOC_FILL_ZERO);
-
 	if (data == NULL)
 		return TEE_ERROR_OUT_OF_MEMORY;
 
@@ -1572,9 +1571,9 @@ static TEE_Result sha256_final(Session_data *session_data, uint32_t param_types,
 	/* Update size to the one actually hashed */
 	params[0].memref.size = (uint32_t)written_hash_length;
 	TEE_MemMove((uint8_t *)(params[0].memref.buffer), data, written_hash_length);
-	TEE_Free(data);
 
 cleanup1:
+	TEE_Free(data);
 	return result;
 }
 
@@ -2564,10 +2563,6 @@ static TEE_Result create_wallet_storage(Session_data *session_data, uint32_t par
 #endif
 		goto cleanup2;
 	}
-	else
-	{
-		DMSG("Successfully extend the wallet storage");
-	}
 
 	session_data->is_storage_created = true;
 
@@ -2580,6 +2575,8 @@ cleanup2:
 	 */
 	*(session_data->wallet_handle) = TEE_HANDLE_NULL;
 cleanup1:
+	TEE_Free(id_name);
+
 	return result;
 }
 
@@ -5533,7 +5530,6 @@ static bool generate_deterministic256_internal(Session_data *session_data, BigNu
 	write_u32_big_endian_internal(&(hmac_message[65]), num);
 
 	result = set_hmac_sha512_key_internal(session_data, &(seed[32]), 32);
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -5546,7 +5542,6 @@ static bool generate_deterministic256_internal(Session_data *session_data, BigNu
 								  hash,
 								  hmac_message,
 								  sizeof(hmac_message));
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -5588,6 +5583,8 @@ static TEE_Result generate_deterministic256(Session_data *session_data, uint32_t
 	TEE_Result result = TEE_SUCCESS;
 	uint32_t exp_param_types;
 	bool gd256_result;
+	char *seed, *key;
+	size_t counter, seed_length, key_length;
 
 	/*
 	 * Expected:
@@ -5609,14 +5606,32 @@ static TEE_Result generate_deterministic256(Session_data *session_data, uint32_t
 	if (param_types != exp_param_types || params[0].memref.buffer == NULL || params[1].memref.buffer == NULL)
 		return TEE_ERROR_BAD_PARAMETERS;
 
+	key_length = params[0].memref.size;
+	key = TEE_Malloc(key_length, 0);
+	if (!key)
+		return TEE_ERROR_OUT_OF_MEMORY;
+
+	seed_length = params[1].memref.size;
+	seed = TEE_Malloc(seed_length, 0);
+	if (!seed)
+		return TEE_ERROR_OUT_OF_MEMORY;
+	TEE_MemMove(seed, (uint8_t *)(params[1].memref.buffer), seed_length);
+
+	counter = params[2].value.a;
+
 	gd256_result = generate_deterministic256_internal(
 		session_data,
-		(BigNum256)(params[0].memref.buffer),
-		(uint8_t *)(params[1].memref.buffer),
-		params[2].value.a,
+		key,
+		seed,
+		counter,
 		false,
 		NULL,
 		0);
+
+	TEE_MemMove((BigNum256)(params[0].memref.buffer), key, key_length);
+
+	TEE_Free(seed);
+	TEE_Free(key);
 
 	params[2].value.b = (uint32_t)gd256_result;
 

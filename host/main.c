@@ -33,25 +33,25 @@ int main(int argc, char const *argv[])
 	initialiseExternVariables();
 	initialiseStats(&tests_stats);
 
-	// initialiseTZ();
-	// TestPerformance(&tests_stats);
-	// terminateTZ();
+	initialiseTZ();
+	TestPerformance(&tests_stats);
+	terminateTZ();
 
-	// initialiseTZ();
-	// TestPerformanceStreams(&tests_stats);
-	// terminateTZ();
+	initialiseTZ();
+	TestPerformanceStreams(&tests_stats);
+	terminateTZ();
 
-	// initialiseTZ();
-	// TestPrandom(&tests_stats);
-	// terminateTZ();
+	initialiseTZ();
+	TestPrandom(&tests_stats);
+	terminateTZ();
 
 	initialiseTZ();
 	TestWallet(&tests_stats);
 	terminateTZ();
 
-	// initialiseTZ();
-	// TestTransaction(&tests_stats);
-	// terminateTZ();
+	initialiseTZ();
+	TestTransaction(&tests_stats);
+	terminateTZ();
 
 	/* TODO REMOVE THIS TEST? IT IS THE SAME THING ALMOST */
 	// TestStreams(&tests_stats);

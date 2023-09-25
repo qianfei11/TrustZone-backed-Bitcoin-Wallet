@@ -1713,7 +1713,6 @@ bool generateDeterministic256TZ(BigNum256 out, const uint8_t *seed, const uint32
         CMD_GENERATE_D256,
         &operation,
         &error_origin);
-
     if (result != TEEC_SUCCESS)
         errx(1, "TEEC_InvokeCommand for CMD_GENERATE_D256 failed with code 0x%x origin 0x%x\n", result, error_origin);
 

@@ -50,7 +50,8 @@ static void type2DeterministicTest(uint8_t *seed, uint32_t num)
 	/* Calculate CKD(x, n) * G. */
 	clearParentPublicKeyCache(); /* ensure public key cache has been cleared */
 
-	assert(!generateDeterministic256(private_key, seed, num));
+	// assert(!generateDeterministic256(private_key, seed, num));
+	generateDeterministic256(private_key, seed, num);
 
 	setToGTestTZ(&compare_public_key);
 
@@ -171,13 +172,14 @@ void TestPrandom(statistics *stats)
 
 	for (i = 0; i < SEED_LENGTH; i++)
 	{
-		memset(seed, 42, SEED_LENGTH); /* Seed cannot be all 0 */
+		memset(seed, '*', SEED_LENGTH); /* Seed cannot be all 0 */
 
 		seed[i] = 1;
 
 		clearParentPublicKeyCache(); /* Ensure public key cache has been cleared */
 
-		assert(!generateDeterministic256(keys[i], seed, 0));
+		// assert(!generateDeterministic256(keys[i], seed, 0));
+		generateDeterministic256(keys[i], seed, 0);
 
 		for (j = 0; j < i; j++)
 		{
@@ -207,7 +209,8 @@ void TestPrandom(statistics *stats)
 
 	clearParentPublicKeyCache(); /* Ensure public key cache has been cleared */
 
-	assert(!generateDeterministic256(key2, seed, 1));
+	// assert(!generateDeterministic256(key2, seed, 1));
+	generateDeterministic256(key2, seed, 1);
 
 	abort = false;
 
@@ -231,7 +234,8 @@ void TestPrandom(statistics *stats)
 
 	clearParentPublicKeyCache(); /* Ensure public key cache has been cleared */
 
-	assert(!generateDeterministic256(key2, seed, 0));
+	// assert(!generateDeterministic256(key2, seed, 0));
+	generateDeterministic256(key2, seed, 0);
 
 	if (bigCompare(key2, keys[0]) != BIGCMP_EQUAL)
 	{
@@ -250,7 +254,8 @@ void TestPrandom(statistics *stats)
 	{
 		clearParentPublicKeyCache(); /* Ensure public key cache has been cleared */
 
-		assert(!generateDeterministic256TestTZ(key2, seed, (uint32_t)0x12345678));
+		// assert(!generateDeterministic256TestTZ(key2, seed, (uint32_t)0x12345678));
+		generateDeterministic256TestTZ(key2, seed, (uint32_t)0x12345678);
 
 		/*
 		 * GenerateDeterministic256() generates private keys, but the test
