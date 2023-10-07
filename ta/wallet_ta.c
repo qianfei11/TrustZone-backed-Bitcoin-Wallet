@@ -3386,7 +3386,6 @@ static TEE_Result read_cache_wallet_storage(Session_data *session_data, uint32_t
 					(uint8_t *)&((uint8_t *)(params[0].memref.buffer))[data_index],
 					(size_t)nv_read_length,
 					address - nv_read_length);
-
 				if (result != TEE_SUCCESS)
 				{
 #ifdef OP_TEE_TA
@@ -3421,7 +3420,6 @@ static TEE_Result read_cache_wallet_storage(Session_data *session_data, uint32_t
 			(uint8_t *)&((uint8_t *)(params[0].memref.buffer))[data_index],
 			(size_t)nv_read_length,
 			address - nv_read_length);
-
 		if (result != TEE_SUCCESS)
 		{
 #ifdef OP_TEE_TA
@@ -6268,12 +6266,6 @@ static TEE_Result calculate_wallet_checksum_internal(Session_data *session_data,
 
 	/* Finalize the hashing operation */
 	result = sha256_final_internal(session_data, hash, (uint32_t)32);
-	printf("hash = ");
-	for (int i = 0; i < 8; i++) {
-		printf("0x%lx ", hash[i]);
-	}
-	printf("\n");
-
 	if (result != TEE_SUCCESS)
 	{
 #ifdef OP_TEE_TA
@@ -6284,12 +6276,6 @@ static TEE_Result calculate_wallet_checksum_internal(Session_data *session_data,
 
 	/* Convert the hash to an byte array */
 	write_hash_to_byte_array_internal(checksum, hash, true);
-	printf("checksum = ");
-	for (int i = 0; i < 32; i++)
-	{
-		printf("0x%lx ", checksum[i]);
-	}
-	printf("\n");
 
 /* Resources cleanup */
 cleanup1:

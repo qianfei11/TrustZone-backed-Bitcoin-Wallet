@@ -1940,7 +1940,6 @@ void deriveAndSetEncryptionKeyTZ(const uint8_t *uuid, const uint8_t *password, c
         CMD_DERIVE_AND_SET_ENCRYPTION_KEY,
         &operation,
         &error_origin);
-
     if (result != TEEC_SUCCESS)
     {
         fprintf(stderr, "TEEC_InvokeCommand for CMD_DERIVE_AND_SET_ENCRYPTION_KEY failed with code 0x%x origin 0x%x\n", result, error_origin);
@@ -2754,7 +2753,6 @@ WalletErrors newWalletTZ(uint32_t wallet_spec, uint8_t *name, bool use_seed, uin
         CMD_NEW_WALLET,
         &operation,
         &error_origin);
-
     if (result != TEEC_SUCCESS)
     {
         if (result == TEEC_ERROR_BAD_FORMAT)

@@ -76,7 +76,7 @@ void printStatistics(int tests_passed, int tests_failed, int tests_total, double
 	printf("+---------------------------------------%29s\n", "----------------------------+");
 	printf("|                           STATISTICS  %29s\n", "|");
 	printf("+---------------------------------------%29s\n", "----------------------------+");
-	printf("|   TIME                |  %7g seconds  %25s\n", time, "|");
+	printf("|   TIME                |  %7g seconds  %24s\n", time, "|");
 	printf("+---------------------------------------%29s\n", "----------------------------+");
 	printf("|   CLOCKS_PER_SEC      |  %7ld         %26s\n", CLOCKS_PER_SEC, "|");
 	printf("+---------------------------------------%29s\n", "----------------------------+");
