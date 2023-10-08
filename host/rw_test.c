@@ -6,6 +6,8 @@
 #include "rw_test.h"
 #include "tz_functions.h"
 #include "user_interface.h"
+#include "stream_comm.h"
+#include "transaction.h"
 
 #include <assert.h>
 #include <stdio.h>
@@ -31,8 +33,6 @@ void create_master_key(statistics *stats)
 	uint32_t version;
 	uint8_t wallet_uuid[UUID_LENGTH];
     uint8_t name[NAME_LENGTH];
-    uint8_t chain_code[32];
-    PointAffine master_public_key;
 
 	is_test = true;
 	tests_total = 0;
@@ -83,7 +83,6 @@ void create_master_key(statistics *stats)
 
 void check_if_master_key_exists(statistics *stats)
 {
-    uint8_t name[NAME_LENGTH];
     uint8_t chain_code[32];
     PointAffine master_public_key;
 
@@ -105,27 +104,6 @@ void check_if_master_key_exists(statistics *stats)
 		report_success();
     }
 
-    if (&master_public_key == NULL)
-    {
-		report_failure();
-    }
-    else
-    {
-		printf("master_public_key.x: ");
-		for (int i = 0; i < 32; i++)
-		{
-			printf("%02x", master_public_key.x[i]);
-		}
-		printf("\n");
-		printf("master_public_key.y: ");
-		for (int i = 0; i < 32; i++)
-		{
-			printf("%02x", master_public_key.y[i]);
-		}
-		printf("\n");
-		report_success();
-    }
-
 	finish_time = clock();
 
 	is_test = false;
@@ -137,6 +115,19 @@ void check_if_master_key_exists(statistics *stats)
 	(stats->failed) += tests_failed;
 	(stats->total) += tests_total;
 	(stats->time) += time_spent;
+
+	printf("master_public_key.x: ");
+	for (int i = 0; i < 32; i++)
+	{
+		printf("%02x", master_public_key.x[i]);
+	}
+	printf("\n");
+	printf("master_public_key.y: ");
+	for (int i = 0; i < 32; i++)
+	{
+		printf("%02x", master_public_key.y[i]);
+	}
+	printf("\n");
 }
 
 void mnemonic_to_master_key(statistics *stats)
@@ -199,7 +190,7 @@ void get_address(statistics *stats)
 	else
 	{
 		printf("address: ");
-		for (int i = 0; i < 32; i++)
+		for (int i = 0; i < 20; i++)
 		{
 			printf("%02x", address[i]);
 		}
