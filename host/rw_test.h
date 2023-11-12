@@ -153,6 +153,6 @@ void mnemonic_to_master_key(statistics *stats);
 void get_address(statistics *stats);
 void sign_transaction(statistics *stats);
 void delete_master_key(statistics *stats);
-void test_all(statistics *stats);
+void test_all(statistics *stats, bool do_create_master_key, bool do_check_if_master_key_exists, bool do_get_address, bool do_sign_transaction, bool do_delete_master_key);
 
 #endif /* #ifndef RW_TEST_H_INCLUDED */

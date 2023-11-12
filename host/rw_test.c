@@ -296,7 +296,8 @@ void delete_master_key(statistics *stats)
 	(stats->time) += time_spent;
 }
 
-void test_all(statistics *stats)
+void test_all(statistics *stats, bool do_create_master_key, bool do_check_if_master_key_exists, 
+				bool do_get_address, bool do_sign_transaction, bool do_delete_master_key)
 {
 
     // init wallet storage
@@ -307,12 +308,17 @@ void test_all(statistics *stats)
 	// suppress_set_entropy_pool = false;
 
     // do test
-    create_master_key(stats);
-    check_if_master_key_exists(stats);
-    mnemonic_to_master_key(stats);
-    get_address(stats);
-    sign_transaction(stats);
-    delete_master_key(stats);
+	if (do_create_master_key)
+	    create_master_key(stats);
+	if (do_check_if_master_key_exists)
+		check_if_master_key_exists(stats);
+    // mnemonic_to_master_key(stats);
+	if (do_get_address)
+		get_address(stats);
+	if (do_sign_transaction)
+		sign_transaction(stats);
+	if (do_delete_master_key)
+		delete_master_key(stats);
 
     // uninit wallet storage
     closeWalletStorage();

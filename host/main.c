@@ -58,8 +58,33 @@ int main(int argc, char const *argv[])
 	// TestStreams(&tests_stats);
 
 	// Our Tests
+	if (argc < 2 || argc > 6) {
+		fprintf(stderr, "Usage: %s [1|2|3|4|5]\n", argv[0]);
+		return -1;
+	}
+
+	bool do_create_master_key = false;
+	bool do_check_if_master_key_exists = false;
+	bool do_get_address = false;
+	bool do_sign_transaction = false;
+	bool do_delete_master_key = false;
+
+	for (int i = 1; i < argc; i++) {
+		if (atoi(argv[i]) == 1) {
+			do_create_master_key = true;
+		} else if (atoi(argv[i]) == 2) {
+			do_check_if_master_key_exists = true;
+		} else if (atoi(argv[i]) == 3) {
+			do_get_address = true;
+		} else if (atoi(argv[i]) == 4) {
+			do_sign_transaction = true;
+		} else if (atoi(argv[i]) == 5) {
+			do_delete_master_key = true;
+		}
+	}
+
 	initialiseTZ();
-	test_all(&tests_stats);
+	test_all(&tests_stats, do_create_master_key, do_check_if_master_key_exists, do_get_address, do_sign_transaction, do_delete_master_key);
 	terminateTZ();
 
 	printf("\n=====================================================================================================================================================\n");
